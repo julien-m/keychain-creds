@@ -51,6 +51,13 @@ Objectif : **zéro fuite de secret**, en toute circonstance.
   - `--export ENV_VAR` : `ENV_VAR=valeur` sur stdout (pour `eval`).
 - En cas d'erreur : stdout **vide**, toujours.
 
+#### `creds env [--file <path>] [--dry-run] -- <command...>`
+- Lit le fichier `.env` (ou `--file`), résout les références `creds:entry` depuis le Keychain, et lance `<command>` avec l'environnement injecté.
+- Les secrets ne transitent **jamais** par stdout/stderr/fichier — ils sont injectés uniquement dans l'environnement du processus enfant.
+- `--dry-run` : affiche les noms de variables et leur source (literal ou creds:entry) sur stderr, **sans aucune valeur**.
+- Le code de sortie est celui du processus enfant (ou un code creds en cas d'erreur de résolution).
+- **C'est la méthode recommandée pour lancer un serveur ou des tests nécessitant des secrets.**
+
 #### `creds rm <entry>`
 - Supprime l'entrée du Keychain.
 - stdout : vide.
@@ -89,7 +96,37 @@ En cas d'erreur : stdout est **toujours vide**. Ne jamais tenter de parser stdou
 
 ## 4) Recettes obligatoires (do)
 
-### Injecter un secret dans une commande
+### Lancer un serveur ou des tests avec des secrets (methode recommandee)
+
+Utiliser `creds env` pour injecter automatiquement tous les secrets depuis un fichier `.env` :
+
+```bash
+# Lancer un serveur de dev
+creds env -- npm run dev
+
+# Lancer les tests
+creds env -- npm test
+
+# Fichier .env personnalise
+creds env --file .env.test -- vitest run
+
+# Verifier les variables avant de lancer
+creds env --dry-run
+```
+
+Le fichier `.env` utilise le prefixe `creds:` pour les secrets :
+
+```bash
+PORT=3000
+DATABASE_URL=creds:myapp/dev/db_url
+OPENROUTER_API_KEY=creds:global/dev/openrouter_api_key
+```
+
+**Toujours preferer `creds env` aux autres methodes** lorsqu'il y a plusieurs secrets a injecter.
+
+### Injecter un secret unique dans une commande
+
+Pour un seul secret, l'injection inline reste valide :
 
 ```bash
 OPENROUTER_API_KEY="$(creds get global/dev/openrouter_api_key)" some-command

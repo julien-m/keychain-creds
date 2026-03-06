@@ -78,19 +78,46 @@ Mapped to Keychain as: `service = "creds:<entry>"`, `account = $USER`.
 
 Override account: `creds --account someone get myapp/dev/key`
 
-## Using creds in environment files
+### Load environment and run a command
 
-In environment files (`.env`, `.env.example`, `.env.mapping`, etc.), reference a Keychain secret using the `creds:` prefix instead of a raw value:
+`creds env` reads a `.env` file, resolves all `creds:` references from the Keychain, and runs a command with the resolved environment variables injected.
 
+```bash
+# Launch a server with secrets resolved from Keychain
+creds env -- npm run dev
+
+# Use a custom env file
+creds env --file .env.local -- node server.js
+
+# Preview which variables will be resolved (no values shown)
+creds env --dry-run
 ```
-OPENROUTER_API_KEY=creds:shared/openrouter_api_key
+
+#### `.env` file format
+
+```bash
+# Literal values are passed through as-is
+PORT=3000
+NODE_ENV=development
+
+# creds: prefix → resolved from Keychain at launch
 DATABASE_URL=creds:myapp/dev/db_url
+OPENROUTER_API_KEY=creds:global/dev/openrouter_api_key
 STRIPE_SECRET_KEY=creds:payments/prod/stripe_secret_key
 ```
 
-- `creds:` indicates the value must be retrieved via the `creds` command
-- `<entry>` is the key stored in the Keychain
-- The actual secret is **never stored in the environment file**
+- Lines starting with `#` and empty lines are ignored
+- `KEY=value` → literal value, injected directly
+- `KEY=creds:namespace/env/name` → resolved from Keychain via `creds get`
+- The actual secret is **never stored in the file**
+- All `creds:` entries are resolved in parallel for speed
+
+#### Options
+
+| Flag | Description |
+|------|-------------|
+| `--file <path>` | Path to env file (default: `.env`) |
+| `--dry-run` | Show variable names and sources, without values |
 
 ## Exit codes
 

@@ -6,6 +6,7 @@ import { writeStderr } from "./core/stdio.js";
 import { setCommand } from "./commands/set.js";
 import { getCommand } from "./commands/get.js";
 import { rmCommand } from "./commands/rm.js";
+import { envCommand } from "./commands/env.js";
 
 assertMacOS();
 
@@ -41,7 +42,8 @@ Exit codes:
   )
   .version("1.0.0")
   .option("--account <account>", "Keychain account (default: $USER)")
-  .option("--timeout-ms <ms>", "Timeout in milliseconds", "10000");
+  .option("--timeout-ms <ms>", "Timeout in milliseconds", "10000")
+  .enablePositionalOptions();
 
 program
   .command("set")
@@ -87,6 +89,24 @@ program
     const globalOpts = parent.opts();
     await rmCommand(entry, {
       account: globalOpts.account,
+      timeoutMs: globalOpts.timeoutMs ? parseInt(globalOpts.timeoutMs) : undefined,
+    });
+  });
+
+program
+  .command("env")
+  .description("Load .env file, resolve creds: references, and run a command")
+  .option("--file <path>", "Path to env file", ".env")
+  .option("--dry-run", "Show resolved variable names (without values)")
+  .argument("[command...]", "Command to run with resolved environment")
+  .passThroughOptions()
+  .action(async (commandArgs: string[], opts: Record<string, unknown>, cmd: Command) => {
+    const parent = cmd.parent!;
+    const globalOpts = parent.opts();
+    await envCommand(commandArgs, {
+      file: opts.file as string | undefined,
+      dryRun: opts.dryRun as boolean | undefined,
+      account: globalOpts.account as string | undefined,
       timeoutMs: globalOpts.timeoutMs ? parseInt(globalOpts.timeoutMs) : undefined,
     });
   });
