@@ -2,6 +2,7 @@
   "name": "keychain-creds",
   "version": "1.0.0",
   "description": "Cross-platform credential manager CLI (macOS Keychain, Windows Credential Manager, Linux Secret Service)",
+  "license": "MIT",
   "type": "module",
   "bin": {
     "creds": "dist/cli.js"

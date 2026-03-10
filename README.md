@@ -193,3 +193,7 @@ export PATH=/opt/homebrew/bin:$PATH && creds get shared/openrouter_api_key --no-
 ```
 
 Shortcuts does not load the terminal `PATH`, so always prefix with the export.
+
+## License
+
+[MIT](LICENSE)
