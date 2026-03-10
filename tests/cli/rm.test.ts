@@ -45,10 +45,7 @@ describe("creds rm (CLI)", () => {
   it("exits 2 when entry not found", async () => {
     const { stdout, code } = await runCli(
       ["rm", "myapp/dev/missing"],
-      {
-        MOCK_EXIT_CODE: "1",
-        MOCK_STDERR: "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.\n",
-      },
+      { MOCK_ERROR: "NOT_FOUND" },
     );
     expect(stdout).toBe("");
     expect(code).toBe(2);

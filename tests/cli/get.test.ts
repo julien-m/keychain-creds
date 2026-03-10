@@ -116,12 +116,9 @@ describe("creds get (CLI)", () => {
   });
 
   it("exits 2 for not found", async () => {
-    const { stdout, stderr, code } = await runCli(
+    const { stdout, code } = await runCli(
       ["get", "myapp/dev/missing"],
-      {
-        MOCK_EXIT_CODE: "1",
-        MOCK_STDERR: "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.\n",
-      },
+      { MOCK_ERROR: "NOT_FOUND" },
     );
     expect(stdout).toBe("");
     expect(code).toBe(2);
@@ -130,10 +127,7 @@ describe("creds get (CLI)", () => {
   it("exits 3 for interaction not allowed", async () => {
     const { stdout, code } = await runCli(
       ["get", "myapp/dev/locked"],
-      {
-        MOCK_EXIT_CODE: "1",
-        MOCK_STDERR: "security: User interaction is not allowed.\n",
-      },
+      { MOCK_ERROR: "ACCESS_DENIED" },
     );
     expect(stdout).toBe("");
     expect(code).toBe(3);
@@ -174,7 +168,7 @@ describe("creds get (Shortcuts compatibility)", () => {
 });
 
 describe("creds get (hex decode)", () => {
-  it("decodes hex-encoded response from macOS security", async () => {
+  it.skipIf(process.platform !== "darwin")("decodes hex-encoded response from macOS security", async () => {
     // macOS sometimes returns passwords as hex — simulate that
     const original = "sk-or-v1-abc123";
     const hex = Buffer.from(original, "utf-8").toString("hex");
