@@ -1,8 +1,3 @@
-import { platform } from "node:os";
+import { getPlatformName } from "./backends/index.js";
 
-export function assertMacOS(): void {
-  if (platform() !== "darwin") {
-    process.stderr.write("Error: creds requires macOS (Keychain)\n");
-    process.exit(1);
-  }
-}
+export { getPlatformName };

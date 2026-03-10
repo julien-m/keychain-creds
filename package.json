@@ -1,7 +1,7 @@
 {
   "name": "keychain-creds",
   "version": "1.0.0",
-  "description": "macOS Keychain credential manager CLI",
+  "description": "Cross-platform credential manager CLI (macOS Keychain, Windows Credential Manager, Linux Secret Service)",
   "type": "module",
   "bin": {
     "creds": "dist/cli.js"

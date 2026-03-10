@@ -1,6 +1,5 @@
 import { Command } from "commander";
 
-import { assertMacOS } from "./core/platform.js";
 import { CredsError, EXIT } from "./core/errors.js";
 import { writeStderr } from "./core/stdio.js";
 import { setCommand } from "./commands/set.js";
@@ -8,21 +7,19 @@ import { getCommand } from "./commands/get.js";
 import { rmCommand } from "./commands/rm.js";
 import { envCommand } from "./commands/env.js";
 
-assertMacOS();
-
 const program = new Command();
 
 program
   .name("creds")
   .description(
-    `macOS Keychain credential manager.
+    `Cross-platform credential manager (macOS Keychain, Windows Credential Manager, Linux Secret Service).
 
 Entry format: namespace/env/name
 Examples:
   myapp/dev/db_url
   shared/openrouter_api_key
 
-Keychain mapping: service = "creds:<entry>", account = $USER
+Credential mapping: service = "creds:<entry>", account = $USER
 
 Usage in shell:
   creds set shared/openrouter_api_key          # interactive masked input
@@ -30,14 +27,11 @@ Usage in shell:
   creds get shared/openrouter_api_key          # prints value to stdout
   OPENROUTER_API_KEY="$(creds get shared/openrouter_api_key)" command ...
 
-Usage in macOS Shortcuts (Run Shell Script):
-  creds get shared/openrouter_api_key
-
 Exit codes:
   0 = success
   1 = usage/validation error
   2 = not found
-  3 = Keychain locked/denied
+  3 = credential store locked/denied
   4 = unexpected error`,
   )
   .version("1.0.0")
