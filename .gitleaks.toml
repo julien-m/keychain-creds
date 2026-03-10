@@ -1,7 +1,4 @@
-[extend]
-# Use default gitleaks rules as base
-
-[[allowlist.paths]]
+[allowlist]
 description = "Test fixtures use fake secrets for mock testing"
 paths = [
   '''tests/.*''',
