@@ -2,10 +2,14 @@ import { execFile, spawn } from "node:child_process";
 
 import type { Backend } from "./types.js";
 import { CredsError, EXIT } from "../errors.js";
+import { resolveExec } from "./exec.js";
 
 const DEFAULT_TIMEOUT = 10_000;
-const PS = "powershell.exe";
-const PS_ARGS = ["-NoProfile", "-NonInteractive", "-Command"];
+const PS = process.env.CREDS_PS_BIN || "powershell.exe";
+const PS_ARGS_DEFAULT = ["-NoProfile", "-NonInteractive", "-Command"];
+
+// When using a mock (.js file), we don't prepend PowerShell-specific args
+const PS_ARGS = PS.endsWith(".js") ? [] : PS_ARGS_DEFAULT;
 
 const CRED_TYPE = `
 Add-Type -TypeDefinition @"
@@ -116,10 +120,11 @@ function runPs(
   script: string,
   timeoutMs: number = DEFAULT_TIMEOUT,
 ): Promise<string> {
+  const [bin, resolvedArgs] = resolveExec(PS, [...PS_ARGS, script]);
   return new Promise((resolve, reject) => {
     execFile(
-      PS,
-      [...PS_ARGS, script],
+      bin,
+      resolvedArgs,
       { timeout: timeoutMs, maxBuffer: 1024 * 1024 },
       (error, stdout, stderr) => {
         if (error) {
@@ -137,8 +142,9 @@ function runPsWithStdin(
   stdin: string,
   timeoutMs: number = DEFAULT_TIMEOUT,
 ): Promise<string> {
+  const [bin, resolvedArgs] = resolveExec(PS, [...PS_ARGS, script]);
   return new Promise((resolve, reject) => {
-    const child = spawn(PS, [...PS_ARGS, script], {
+    const child = spawn(bin, resolvedArgs, {
       stdio: ["pipe", "pipe", "pipe"],
     });
 

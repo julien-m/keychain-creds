@@ -2,8 +2,9 @@ import { execFile, spawn } from "node:child_process";
 
 import type { Backend } from "./types.js";
 import { CredsError, EXIT } from "../errors.js";
+import { resolveExec } from "./exec.js";
 
-const SECRET_TOOL = "secret-tool";
+const SECRET_TOOL = process.env.CREDS_SECRET_TOOL_BIN || "secret-tool";
 const DEFAULT_TIMEOUT = 10_000;
 
 function mapLinuxError(stderr: string, code?: string): CredsError {
@@ -53,10 +54,11 @@ function run(
   args: string[],
   timeoutMs: number = DEFAULT_TIMEOUT,
 ): Promise<string> {
+  const [bin, resolvedArgs] = resolveExec(SECRET_TOOL, args);
   return new Promise((resolve, reject) => {
     execFile(
-      SECRET_TOOL,
-      args,
+      bin,
+      resolvedArgs,
       { timeout: timeoutMs, maxBuffer: 1024 * 1024 },
       (error, stdout, stderr) => {
         if (error) {
@@ -75,8 +77,9 @@ function runWithStdin(
   stdin: string,
   timeoutMs: number = DEFAULT_TIMEOUT,
 ): Promise<void> {
+  const [bin, resolvedArgs] = resolveExec(SECRET_TOOL, args);
   return new Promise((resolve, reject) => {
-    const child = spawn(SECRET_TOOL, args, {
+    const child = spawn(bin, resolvedArgs, {
       stdio: ["pipe", "pipe", "pipe"],
     });
 

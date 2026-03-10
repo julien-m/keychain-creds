@@ -14,6 +14,8 @@ function runCli(
       env: {
         ...process.env,
         CREDS_SECURITY_BIN: MOCK,
+          CREDS_SECRET_TOOL_BIN: MOCK,
+          CREDS_PS_BIN: MOCK,
         ...opts.env,
       },
       stdio: ["pipe", "pipe", "pipe"],

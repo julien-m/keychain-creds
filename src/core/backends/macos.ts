@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 
 import type { Backend } from "./types.js";
 import { mapSecurityError } from "../errors.js";
+import { resolveExec } from "./exec.js";
 
 const SECURITY_BIN = process.env.CREDS_SECURITY_BIN || "security";
 const DEFAULT_TIMEOUT = 10_000;
@@ -10,10 +11,11 @@ function run(
   args: string[],
   timeoutMs: number = DEFAULT_TIMEOUT,
 ): Promise<{ stdout: string; stderr: string }> {
+  const [bin, resolvedArgs] = resolveExec(SECURITY_BIN, args);
   return new Promise((resolve, reject) => {
     execFile(
-      SECURITY_BIN,
-      args,
+      bin,
+      resolvedArgs,
       { timeout: timeoutMs, maxBuffer: 1024 * 1024 },
       (error, stdout, stderr) => {
         if (error) {
