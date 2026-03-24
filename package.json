@@ -15,7 +15,7 @@
     "typecheck": "tsc --noEmit"
   },
   "engines": {
-    "node": ">=20"
+    "bun": ">=1.0.0"
   },
   "dependencies": {
     "commander": "^14.0.3",

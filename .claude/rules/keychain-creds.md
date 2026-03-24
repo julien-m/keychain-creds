@@ -102,10 +102,10 @@ Utiliser `creds env` pour injecter automatiquement tous les secrets depuis un fi
 
 ```bash
 # Lancer un serveur de dev
-creds env -- npm run dev
+creds env -- bun run dev
 
 # Lancer les tests
-creds env -- npm test
+creds env -- bun test
 
 # Fichier .env personnalise
 creds env --file .env.test -- vitest run

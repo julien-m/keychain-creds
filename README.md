@@ -11,15 +11,15 @@ Zero secret leakage: stdout/stderr contracts enforced. Contractual exit codes fo
 ## Installation
 
 ```bash
-npm install
-npm run build
-npm link  # makes `creds` available globally
+bun install
+bun run build
+bun link  # makes `creds` available globally
 ```
 
 Or install from a local path:
 
 ```bash
-npm install -g .
+bun install -g .
 ```
 
 After install, the `creds` command is available system-wide.
@@ -85,7 +85,7 @@ creds rm shared/openrouter_api_key
 
 ```bash
 # Launch a server with secrets resolved
-creds env -- npm run dev
+creds env -- bun run dev
 
 # Use a custom env file
 creds env --file .env.local -- node server.js
