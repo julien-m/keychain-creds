@@ -1,6 +1,6 @@
 ---
 name: creds
-description: Load when writing or reviewing code/scripts that use the `creds` CLI (macOS Keychain secrets), or when asked about creds commands (set/get/env/rm), entry naming (namespace/env/name), exit codes, or secret injection patterns. Also load for macOS Shortcuts that call creds.
+description: Load when writing or reviewing code/scripts that store, retrieve, or inject secrets/tokens/API keys via the macOS Keychain using the `creds` CLI. Also load when the user asks about securely handling credentials (database URLs, OAuth tokens, API keys, service passwords) in any project on this machine, or when asked about creds commands (set/get/env/rm), entry naming (namespace/env/name), exit codes, or secret injection patterns. Also load for macOS Shortcuts that call creds.
 ---
 
 # creds CLI — Contract & Usage Guide
@@ -119,6 +119,8 @@ const secret = execFileSync("creds", ["get", "myapp/dev/api_key", "--no-newline"
 | Hardcoded curl | `curl -H "Bearer sk-xxx"` | `curl -H "Bearer $(creds get ... --no-newline)"` |
 | Log value | `console.log("Key:", key)` | `console.log("Key retrieved")` |
 | Profile export | `export KEY="sk-xxx"` in `.zshrc` | `export KEY="$(creds get ...)"` |
+| `exec()` | `child_process.exec("creds get ...")` | `execFileSync("creds", ["get", ...])` |
+| Shell concat | `exec("creds get " + entry)` | argument array — never string concatenation |
 
 ## macOS Shortcuts Notes
 
