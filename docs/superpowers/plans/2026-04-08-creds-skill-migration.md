@@ -6,6 +6,8 @@
 
 **Architecture:** Skill dans `keychain-creds/.claude/skills/creds/SKILL.md`, rule projet réduite aux gardes comportementales (~15 lignes), rule globale supprimée après validation du skill. Ordre critique : créer → optimiser → committer → lier → valider → supprimer.
 
+**Statut : historique.** Ce plan décrit la migration initiale rule → skill avant agent-sync. Depuis la migration agent-sync du 2026-05-18, **Use** [`../../../.agent-sync/skills/creds/SKILL.md`](../../../.agent-sync/skills/creds/SKILL.md) comme source canonique ; les liens provider globaux doivent passer par `~/.agent-sync/skills/creds`.
+
 **Tech Stack:** Markdown (SKILL.md format), cc-hub CLI, git, symlinks
 
 ---

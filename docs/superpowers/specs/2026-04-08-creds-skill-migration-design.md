@@ -4,6 +4,8 @@
 **Projet :** keychain-creds
 **Objectif :** Remplacer la rule globale `keychain-creds.md` (8454 octets, chargée systématiquement) par un skill `creds` à déclenchement conditionnel.
 
+**Statut : historique.** Ce design décrit la migration initiale rule → skill avant agent-sync. Depuis la migration agent-sync du 2026-05-18, **Use** [`../../../.agent-sync/skills/creds/SKILL.md`](../../../.agent-sync/skills/creds/SKILL.md) comme source canonique ; les liens provider globaux doivent passer par `~/.agent-sync/skills/creds`.
+
 ---
 
 ## Problème
