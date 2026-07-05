@@ -97,13 +97,32 @@ describe("creds get (CLI)", () => {
     expect(code).toBe(0);
   });
 
-  it("--export outputs ENV=value format", async () => {
+  it("--export outputs shell-safe ENV=value format", async () => {
     const { stdout, code } = await runCli(
       ["get", "myapp/dev/db_url", "--export", "DB_URL"],
       { MOCK_SECRET: "my-secret-value" },
     );
-    expect(stdout.trim()).toBe("DB_URL=my-secret-value");
+    expect(stdout.trim()).toBe("DB_URL='my-secret-value'");
     expect(code).toBe(0);
+  });
+
+  it("--export quotes shell metacharacters and single quotes", async () => {
+    const { stdout, code } = await runCli(
+      ["get", "myapp/dev/db_url", "--export", "DB_URL"],
+      { MOCK_SECRET: "p@$$word '123'" },
+    );
+    expect(stdout.trim()).toBe("DB_URL='p@$$word '\\''123'\\'''");
+    expect(code).toBe(0);
+  });
+
+  it("--export rejects invalid environment variable names", async () => {
+    const { stdout, stderr, code } = await runCli(
+      ["get", "myapp/dev/db_url", "--export", "BAD-NAME"],
+      { MOCK_SECRET: "my-secret-value" },
+    );
+    expect(stdout).toBe("");
+    expect(stderr).toContain("Invalid environment variable name");
+    expect(code).toBe(1);
   });
 
   it("--base64 encodes the value", async () => {
@@ -168,15 +187,12 @@ describe("creds get (Shortcuts compatibility)", () => {
 });
 
 describe("creds get (hex decode)", () => {
-  it.skipIf(process.platform !== "darwin")("decodes hex-encoded response from macOS security", async () => {
-    // macOS sometimes returns passwords as hex — simulate that
-    const original = "sk-or-v1-abc123";
-    const hex = Buffer.from(original, "utf-8").toString("hex");
+  it.skipIf(process.platform !== "darwin")("does not decode plain hex-looking secrets", async () => {
     const { stdout, code } = await runCli(
       ["get", "myapp/dev/api_key"],
-      { MOCK_SECRET: hex },
+      { MOCK_SECRET: "41424344" },
     );
-    expect(stdout.trim()).toBe(original);
+    expect(stdout.trim()).toBe("41424344");
     expect(code).toBe(0);
   });
 

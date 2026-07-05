@@ -1,6 +1,13 @@
 import { getPassword } from "../core/keychain.js";
 import { writeStdout } from "../core/stdio.js";
 import { toService, validateEntry, defaultAccount } from "../core/validation.js";
+import { CredsError, EXIT } from "../core/errors.js";
+
+const ENV_VAR_RE = /^[A-Za-z_][A-Za-z0-9_]*$/;
+
+function shellQuote(value: string): string {
+  return `'${value.replace(/'/g, "'\\''")}'`;
+}
 
 export async function getCommand(
   entry: string,
@@ -31,7 +38,10 @@ export async function getCommand(
 
   if (opts.export) {
     const envVar = opts.export;
-    writeStdout(`${envVar}=${value}`, !!opts.noNewline);
+    if (!ENV_VAR_RE.test(envVar)) {
+      throw new CredsError(`Invalid environment variable name: ${envVar}`, EXIT.USAGE);
+    }
+    writeStdout(`${envVar}=${shellQuote(value)}`, !!opts.noNewline);
     return;
   }
 

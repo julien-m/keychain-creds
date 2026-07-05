@@ -62,7 +62,12 @@ if (mockExitCode !== 0) {
 // --- macOS `security` subcommands ---
 
 if (subcommand === "find-generic-password") {
-  process.stdout.write(mockSecret + "\n");
+  if (args.includes("-g")) {
+    const escaped = mockSecret.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    process.stderr.write(`password: "${escaped}"\n`);
+  } else {
+    process.stdout.write(mockSecret + "\n");
+  }
   process.exit(0);
 }
 
