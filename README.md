@@ -63,7 +63,7 @@ OPENROUTER_API_KEY="$(creds get shared/openrouter_api_key)" some-command
 | `--no-newline` | Omit trailing newline |
 | `--base64` | Base64-encode the output |
 | `--json` | Output `{"entry":"...","value":"..."}` |
-| `--export ENV_VAR` | Output `ENV_VAR=value` for `eval` |
+| `--export ENV_VAR` | Output shell-quoted `ENV_VAR='value'` for `eval` |
 
 ```bash
 # eval-friendly export

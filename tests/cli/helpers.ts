@@ -37,6 +37,8 @@ export function runCLI(
     const env: Record<string, string> = {
       ...process.env as Record<string, string>,
       CREDS_SECURITY_BIN: MOCK_PATH,
+      CREDS_SECRET_TOOL_BIN: MOCK_PATH,
+      CREDS_PS_BIN: MOCK_PATH,
       ...(opts.mockKeychainPath ? { MOCK_KEYCHAIN_PATH: opts.mockKeychainPath } : {}),
       ...(opts.locked ? { MOCK_KEYCHAIN_LOCKED: "1" } : {}),
       ...(opts.env || {}),
