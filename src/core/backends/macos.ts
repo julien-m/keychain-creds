@@ -28,18 +28,22 @@ function run(
   });
 }
 
-const HEX_RE = /^[0-9a-fA-F]+$/;
+const SECURITY_HEX_RE = /^0x([0-9a-fA-F]+)$/;
 
-function decodeHexIfNeeded(raw: string): string {
-  if (raw.length >= 2 && raw.length % 2 === 0 && HEX_RE.test(raw)) {
-    try {
-      const decoded = Buffer.from(raw, "hex").toString("utf-8");
-      if (!decoded.includes("\uFFFD") && /^[\x20-\x7E\t\n\r]+$/.test(decoded)) {
-        return decoded;
-      }
-    } catch {
-      // Not valid hex, return as-is
-    }
+function unescapeSecurityQuotedValue(value: string): string {
+  return value.replace(/\\(["\\])/g, "$1");
+}
+
+function parseSecurityPassword(stderr: string): string {
+  const line = stderr.split(/\r?\n/).find((entry) => entry.startsWith("password: "));
+  if (!line) return "";
+  const raw = line.slice("password: ".length);
+  if (raw.startsWith('"') && raw.endsWith('"')) {
+    return unescapeSecurityQuotedValue(raw.slice(1, -1));
+  }
+  const hexMatch = raw.match(SECURITY_HEX_RE);
+  if (hexMatch && hexMatch[1].length % 2 === 0) {
+    return Buffer.from(hexMatch[1], "hex").toString("utf-8");
   }
   return raw;
 }
@@ -71,17 +75,16 @@ export const macosBackend: Backend = {
     account: string,
     timeoutMs?: number,
   ): Promise<string> {
-    const { stdout } = await run(
+    const { stderr } = await run(
       [
         "find-generic-password",
         "-s", service,
         "-a", account,
-        "-w",
+        "-g",
       ],
       timeoutMs,
     );
-    const raw = stdout.replace(/\n$/, "");
-    return decodeHexIfNeeded(raw);
+    return parseSecurityPassword(stderr);
   },
 
   async deletePassword(

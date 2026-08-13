@@ -23,7 +23,7 @@ stdout = **value only** (+ `\n` default). stderr = errors only.
 | `--no-newline` | omit trailing `\n` |
 | `--base64` | base64-encode the value |
 | `--json` | `{"entry":"...","value":"..."}` |
-| `--export ENV_VAR` | `ENV_VAR=value` (for `eval`) |
+| `--export ENV_VAR` | shell-quoted `ENV_VAR='value'` (for `eval`) |
 
 On error: stdout **always empty**.
 
