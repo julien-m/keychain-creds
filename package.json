@@ -18,7 +18,7 @@
     "bun": ">=1.0.0"
   },
   "dependencies": {
-    "commander": "^15.0.0",
+    "commander": "^15.1.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
